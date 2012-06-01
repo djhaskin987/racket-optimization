@@ -29,8 +29,8 @@
                      (bitwise-toggle current-x current-bit))
                    (changed-fitness (fitness changed-x)))
               (let-values (((tried-x tried-fitness)
-                            (if (> order 0)
-                              (opt-rec (sub1 order)
+                            (if (> ord 0)
+                              (opt-rec (sub1 ord)
                                        changed-x
                                        changed-fitness
                                        (add1 current-bit)
