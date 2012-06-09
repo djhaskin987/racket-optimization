@@ -8,9 +8,38 @@
 (define (circular-index pos offset size)
   (modulo (+ pos (remainder offset size) size) size))
 
-(define (opt order x len fitness (cmp >) (prng random))
+(define (svopt order x len fitness (cmp >) (prng random))
+  (let svopt-sentinel ((sent-x x)
+                       (sent-fitness-x (fitness x)))
+    (let-values (((sent-obtained-x sent-obtained-fitness-x)
+                  (let svopt-loop ((loop-order 0)
+                                   (loop-x sent-x)
+                                   (loop-fitness-x sent-fitness-x))
+                    (if (>= loop-order order) 
+                      (values loop-x loop-fitness-x)
+                      (let-values (((obtained-x obtained-fitness-x)
+                                    (opt loop-order
+                                         loop-x
+                                         loop-fitness-x
+                                         len
+                                         fitness
+                                         cmp
+                                         prng)))
+                        (if (cmp obtained-fitness-x loop-fitness-x)
+                          (svopt-loop (add1 loop-order)
+                                      obtained-x 
+                                      obtained-fitness-x)
+                          (svopt-loop (add1 loop-order)
+                                      loop-x
+                                      loop-fitness-x)))))))
+      (if (cmp sent-obtained-fitness-x sent-fitness-x)
+        (svopt-sentinel sent-obtained-x
+                        sent-obtained-fitness-x)
+        (values sent-x sent-fitness-x)))))
+
+(define (opt order x x-fitness len fitness (cmp >) (prng random))
   (let opt-run ((run-x x)
-                (run-fitness (fitness x)))
+                (run-fitness x-fitness))
     (let-values (((obtained-x obtained-fitness)
                   (let opt-rec ((ord order)
                                 (cur-x run-x)
@@ -49,4 +78,4 @@
                                        (sub1 loop-length)))))))))))
       (if (cmp obtained-fitness run-fitness)
         (opt-run obtained-x obtained-fitness)
-        (values obtained-x obtained-fitness)))))
+        (values run-x run-fitness)))))
