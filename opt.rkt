@@ -1,13 +1,12 @@
-(define (square x) (* x x))
+#lang racket
 
+(define (square x) (* x x))
 (define (bitwise-toggle x pos)
   (bitwise-xor
     x
     (arithmetic-shift 1 pos)))
-
 (define (circular-index pos offset size)
   (modulo (+ pos (remainder offset size) size) size))
-
 
 (define (prime-solver number order)
   (let ((len (integer-length number)))
@@ -15,7 +14,7 @@
       (let-values (((x fitness)
                     (svopt order
                            (random number)
-                           len (lambda (x) 
+                           len (lambda (x)
                                  (if (and (> x 1)
                                           (< x number))
                                    (remainder number x)
@@ -33,7 +32,7 @@
                   (let svopt-loop ((loop-order 0)
                                    (loop-x sent-x)
                                    (loop-fitness-x sent-fitness-x))
-                    (if (>= loop-order order) 
+                    (if (>= loop-order order)
                       (values loop-x loop-fitness-x)
                       (let-values (((obtained-x obtained-fitness-x)
                                     (opt loop-order
@@ -45,7 +44,7 @@
                                          prng)))
                         (if (cmp obtained-fitness-x loop-fitness-x)
                           (svopt-loop (add1 loop-order)
-                                      obtained-x 
+                                      obtained-x
                                       obtained-fitness-x)
                           (svopt-loop (add1 loop-order)
                                       loop-x
@@ -82,7 +81,8 @@
                                   (opt-rec (sub1 ord)
                                            changed-x
                                            changed-fitness
-                                           (circular-index current-bit 1 len)
+                                           (circular-index
+                                             current-bit 1 len)
                                            (sub1 loop-length))
                                   (values changed-x changed-fitness))))
                               (if (cmp tried-fitness current-fit)
@@ -97,3 +97,8 @@
       (if (cmp obtained-fitness run-fitness)
         (opt-run obtained-x obtained-fitness)
         (values run-x run-fitness)))))
+
+(define-values (number o)
+  (command-line #:args (num o) (values (string->number num) 
+                                       (string->number o))))
+(printf "~a ~a ~a" (integer-length number) number (prime-solver number o))
