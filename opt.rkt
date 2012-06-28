@@ -5,25 +5,9 @@
   (bitwise-xor
     x
     (arithmetic-shift 1 pos)))
+
 (define (circular-index pos offset size)
   (modulo (+ pos (remainder offset size) size) size))
-
-(define (prime-solver number order)
-  (let ((len (integer-length number)))
-    (let prime-solver-loop ()
-      (let-values (((x fitness)
-                    (svopt order
-                           (random number)
-                           len (lambda (x)
-                                 (if (and (> x 1)
-                                          (< x number))
-                                   (remainder number x)
-                                   (expt 2 (+ len 5))))
-                           <)))
-        (if (= fitness 0)
-          x
-          (prime-solver-loop))))))
-
 
 (define (svopt order x len fitness (cmp >) (prng random))
   (let svopt-sentinel ((sent-x x)
@@ -97,8 +81,4 @@
       (if (cmp obtained-fitness run-fitness)
         (opt-run obtained-x obtained-fitness)
         (values run-x run-fitness)))))
-
-(define-values (number o)
-  (command-line #:args (num o) (values (string->number num) 
-                                       (string->number o))))
-(printf "~a ~a ~a" (integer-length number) number (prime-solver number o))
+(provide svopt)
