@@ -1,1 +1,0 @@
-("5.3.0.16" ("6672513d6906129308763471df23fba56eb973c2" . "0c95c96548cfb56f5874cfc3099946b105cb0402") #"/home/djhaskin814/Code/racket/opt/utilities.rkt" (collects #"racket" #"main.rkt") (collects #"racket" #"lang" #"reader.rkt"))
