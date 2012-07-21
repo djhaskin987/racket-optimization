@@ -1,13 +1,5 @@
 #lang racket
-
-(define (square x) (* x x))
-(define (bitwise-toggle x pos)
-  (bitwise-xor
-    x
-    (arithmetic-shift 1 pos)))
-
-(define (circular-index pos offset size)
-  (modulo (+ pos (remainder offset size) size) size))
+(require "utilities.rkt")
 
 (define (svopt order x len fitness (cmp >) (prng random))
   (let svopt-sentinel ((sent-x x)
