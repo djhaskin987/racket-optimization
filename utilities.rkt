@@ -14,29 +14,52 @@
                                (and/c integer? (not/c negative?))))
            (bitwise-toggle (-> (and/c integer? (not/c negative?))
                                (and/c integer? (not/c negative?))
-                               (and/c integer? (not/c negative?))))))
+                               (and/c integer? (not/c negative?))))
+           (non-negative-integer? (-> any/c boolean?))
+           (positive-integer? (-> any/c boolean?))
+           (portion? (-> any/c boolean?))))
 
+(define (non-negative-integer? a)
+  (and (number? a)
+       (exact-integer? a)
+       (not (negative? a))))
 
+(define (positive-integer? a)
+  (and (number? a) 
+       (exact-integer? a)
+       (not (negative? a))))
+
+(define (portion? a)
+  (and (number? a)
+       (>= a 0)
+       (< a 1)))
 
 (define (pick-without-replacement k 
                                   subject-list 
-                                  subject-list-size 
+                                  subject-list-size
                                   (prng random))
-  (if (or (= k 0) (empty? subject-list))
-    empty
-    (let ((dice (prng)))
-      (if (< dice (/ k subject-list-size))
-        (cons (first subject-list)
-              (pick-without-replacement
-                prng
-                (- k 1)
-                (rest subject-list)
-                (- subject-list-size 1)))
-        (pick-without-replacement
-          prng
-          k
-          (rest subject-list)
-          (- subject-list-size 1))))))
+  (let pick-without-replacement-rec
+    ((chosen-list empty)
+     (num-left k)
+     (residue-list empty)
+     (source-list subject-list)
+     (source-list-size subject-list-size))
+    (if (or (= num-left 0) (empty? source-list))
+      (values chosen-list
+              (append residue-list source-list))
+      (if (< (prng) (/ num-left source-list-size))
+        (pick-without-replacement-rec
+          (cons (first source-list) chosen-list)
+          (sub1 num-left)
+          residue-list
+          (rest source-list)
+          (sub1 source-list-size))
+        (pick-without-replacement-rec
+          chosen-list
+          num-left
+          (cons (first source-list) residue-list)
+          (rest source-list)
+          (sub1 source-list-size))))))
 
 (define (square x) (* x x))
 

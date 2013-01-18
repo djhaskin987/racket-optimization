@@ -95,7 +95,7 @@
 
 (let ((a (prime-solver number o)))
   (printf "~a ~a ~a ~a"
-          (integer-length number) 
-          number 
-          a 
+          (integer-length number)
+          number
+          a
           (remainder number a)))
