@@ -1,41 +1,50 @@
 #lang racket
 
-(provide (contract-out 
-           (pick-without-replacement (-> (and/c integer? (not/c negative?))
-                                         cons?
-                                         (and/c integer? (not/c negative?))
-                                         (-> integer?
-                                             (and/c integer? (not/c negative?)))
-                                         cons?))
-           (square (-> number? number?))
-           (circular-index (-> (and/c integer? (not/c negative?))
-                               integer?
-                               positive?
-                               (and/c integer? (not/c negative?))))
-           (bitwise-toggle (-> (and/c integer? (not/c negative?))
-                               (and/c integer? (not/c negative?))
-                               (and/c integer? (not/c negative?))))
+(provide (contract-out
+           (pick-without-replacement
+             (-> (and/c exact-integer? (not/c negative?))
+                 list?
+                 (and/c exact-integer? (not/c negative?))
+                 procedure?
+                 (values list? list?)))
+           (count-bits
+             (-> (and/c exact-integer? (not/c negative?))
+                 (and/c exact-integer? (not/c negative?))))
+           (square
+             (-> number? number?))
+           (circular-index
+             (-> (and/c exact-integer? (not/c negative?))
+                 exact-integer?
+                 positive?
+                 (and/c exact-integer? (not/c negative?))))
+           (bitwise-toggle
+             (-> (and/c exact-integer? (not/c negative?))
+                 (and/c exact-integer? (not/c negative?))
+                 (and/c exact-integer? (not/c negative?))))
            (non-negative-integer? (-> any/c boolean?))
-           (positive-integer? (-> any/c boolean?))
-           (portion? (-> any/c boolean?))))
+           (truth-value? (-> any/c boolean?))))
 
 (define (non-negative-integer? a)
   (and (number? a)
        (exact-integer? a)
        (not (negative? a))))
 
-(define (positive-integer? a)
-  (and (number? a) 
-       (exact-integer? a)
-       (not (negative? a))))
-
-(define (portion? a)
+(define (truth-value? a)
   (and (number? a)
        (>= a 0)
-       (< a 1)))
+       (<= a 1)))
 
-(define (pick-without-replacement k 
-                                  subject-list 
+(define (count-bits number)
+  (if (zero? number)
+    0
+    (let ((count-rest (count-bits (arithmetic-shift number -1))))
+
+      (if (zero? (bitwise-and 1 number))
+        count-rest
+        (add1 count-rest)))))
+
+(define (pick-without-replacement k
+                                  subject-list
                                   subject-list-size
                                   (prng random))
   (let pick-without-replacement-rec
